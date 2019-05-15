@@ -4,7 +4,7 @@
 #include "pixmap.h"
 #include <memory>
 
-namespace aquabox
+namespace fb
 {
     class Sprite: public Pixmap
     {

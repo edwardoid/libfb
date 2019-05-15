@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <png.h>
 
-namespace aquabox
+namespace fb
 {
     class PNGImage: public Pixmap
     {

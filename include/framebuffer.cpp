@@ -17,7 +17,7 @@
 #include <errno.h>
 #include <iostream>
 
-using namespace aquabox;
+using namespace fb;
 
 FrameBuffer::Color FrameBuffer::convert(uint32_t rgb)
 {

@@ -6,7 +6,8 @@
 #include <qrencode.h>
 #include <linux/fb.h>
 #include "pixmap.h"
-namespace aquabox
+
+namespace fb
 {
 
     class FrameBuffer

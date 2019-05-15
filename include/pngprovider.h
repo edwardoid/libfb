@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <memory>
 
-namespace aquabox
+namespace fb
 {
     class PNGProvider
     {

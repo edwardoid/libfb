@@ -1,7 +1,7 @@
 #include "sprite.h"
 #include "log.h"
 
-using namespace aquabox;
+using namespace fb;
 
 Sprite::Sprite(std::shared_ptr<Pixmap> source, uint32_t frameWidth, uint32_t frameHeight, uint32_t framesCount)
     : m_source(source)
