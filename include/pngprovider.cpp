@@ -1,5 +1,4 @@
 #include "pngprovider.h"
-#include "pngimage.h"
 
 using namespace fb;
 

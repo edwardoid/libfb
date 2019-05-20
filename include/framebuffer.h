@@ -27,8 +27,9 @@ namespace fb
         void drawBitmap(uint32_t x, uint32_t y, uint8_t* bitmap, uint32_t width, uint32_t height, uint32_t color);
         void drawPixmap(uint32_t x, uint32_t y, const Pixmap* pixmap);
         uint32_t drawQRCode(QRcode* code, uint32_t x, uint32_t y, uint32_t width, uint32_t color);
+        uint32_t qrCodeSize(QRcode* code, uint32_t width) const;
         void fillRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t color);
-        void drawRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t color);
+        void drawRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uin;t32_t color);
         bool drawText(std::string fontPath, uint32_t fontsize, uint32_t x, uint32_t y, double angle, std::string text, uint32_t color);
 
         uint32_t width() const;
