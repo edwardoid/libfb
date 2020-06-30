@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-namespace aquabox
+namespace fb
 {
     class Pixmap
     {

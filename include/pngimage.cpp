@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-using namespace aquabox;
+using namespace fb;
 
 PNGImage::PNGImage(std::string path)
     : Pixmap()

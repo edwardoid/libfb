@@ -1,7 +1,7 @@
 #include "pngprovider.h"
 #include "pngimage.h"
 
-using namespace aquabox;
+using namespace fb;
 
 std::shared_ptr<PNGImage> PNGProvider::get(std::string path)
 {
