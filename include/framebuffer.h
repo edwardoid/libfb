@@ -1,3 +1,21 @@
+/************************************************************************
+ * lifb - Simple library for drawing on Linux FrameBuffer
+ * 
+ * Copyright (C) 2019  Eduard Sargsyan
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ ************************************************************************/
 #ifndef FRAMEBUFFER_H
 #define FRAMEBUFFER_H
 
@@ -7,9 +25,8 @@
 #include <linux/fb.h>
 #include "pixmap.h"
 
-namespace fb
+namespace IoT
 {
-
     class FrameBuffer
     {
     public:
@@ -29,7 +46,7 @@ namespace fb
         uint32_t drawQRCode(QRcode* code, uint32_t x, uint32_t y, uint32_t width, uint32_t color);
         uint32_t qrCodeSize(QRcode* code, uint32_t width) const;
         void fillRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t color);
-        void drawRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uin;t32_t color);
+        void drawRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t color);
         bool drawText(std::string fontPath, uint32_t fontsize, uint32_t x, uint32_t y, double angle, std::string text, uint32_t color);
 
         uint32_t width() const;
