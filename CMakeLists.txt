@@ -10,8 +10,8 @@ endif()
 
 find_package(PkgConfig)
 
-file(GLOB SOURCES "include/*.cpp")
-file(GLOB INCLUDES "include/*.h")
+file(GLOB SOURCES "${CMAKE_CURRENT_LIST_DIR}/include/*.cpp")
+file(GLOB INCLUDES "${CMAKE_CURRENT_LIST_DIR}/include/*.h")
 
 find_package(Threads)
 
@@ -29,11 +29,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION 1)
 set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER include/wifi_setup.h)
 set_target_properties(${PROJECT_NAME}_shared PROPERTIES OUTPUT_NAME "${PROJECT_NAME}")
 set_target_properties(${PROJECT_NAME}_static PROPERTIES OUTPUT_NAME "${PROJECT_NAME}")
-#install(FILES "include/wifi_setup.h" DESTINATION include)
-#install(FILES "3dp/s2s/s2s.h" DESTINATION include)
-#install(FILES "3dp/s2s/s2s_property.h" DESTINATION include)
 install(TARGETS ${PROJECT_NAME}_static DESTINATION lib)
 install(TARGETS ${PROJECT_NAME}_shared DESTINATION lib)
+
+#export(TARGETS ${PROJECT_NAME}_shared ${PROJECT_NAME}_static FILE libfb-exports.cmake)
 
 if (BUILD_TEST)
    file(GLOB TEST_SOURCES "tests/*.cpp")
