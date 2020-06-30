@@ -5,7 +5,6 @@ set(CMAKE_CXX_STANDARD 11)
 if (TARGET_DEVICE)
   set(CMAKE_BUILD_TYPE Release)
   add_definitions(-DTARGET_DEVICE)
-  include_directories("$ENV{SYSROOT_DIR}/usr/include")
 endif()
 
 find_package(PkgConfig)
