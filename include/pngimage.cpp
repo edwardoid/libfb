@@ -1,6 +1,4 @@
 #include "pngimage.h"
-#include "pngimage.h"
-#include "pngimage.h"
 #include <stdlib.h>
 #include <stdio.h>
 

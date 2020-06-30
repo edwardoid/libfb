@@ -56,7 +56,6 @@ FrameBuffer::Color FrameBuffer::convert(uint8_t* pos)
     switch(m_varInfo.bits_per_pixel)
     {
         case 16: {
-            
             uint16_t* px16 = (uint16_t*) (c.data);
             *px16 = *((uint16_t*)pos);
 
@@ -495,6 +494,11 @@ uint32_t FrameBuffer::drawQRCode(QRcode* code, uint32_t x, uint32_t y, uint32_t 
     return len * code->width;
 }
 
+uint32_t FrameBuffer::qrCodeSize(QRcode* code, uint32_t width) const
+{
+    return floor((double)width / (double)code->width) * code->width;
+}
+
 void FrameBuffer::fillRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t color)
 {
     Color c = convert(color);
@@ -514,7 +518,7 @@ void FrameBuffer::fillRect(uint32_t x, uint32_t y, uint32_t width, uint32_t heig
         for(uint32_t j = 0; j < height; ++j) {
             uint32_t pos = offset(x + i, y + j);    
             if (pos != -1) {
-                memcpy(m_mem + pos, c.data, Bpp);   
+                memcpy(m_mem + pos, c.data, Bpp);
             }
         }
     }

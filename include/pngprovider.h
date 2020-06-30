@@ -1,18 +1,19 @@
 #ifndef PNG_PROVIDER_H
-#define PNG_POVIDER_H
+#define PNG_PROVIDER_H
 
 #include <string>
 #include <unordered_map>
 #include <memory>
+#include "pngimage.h"
 
 namespace fb
 {
     class PNGProvider
     {
     public:
-        std::shared_ptr<class PNGImage> get(std::string path);
+        std::shared_ptr<PNGImage> get(std::string path);
     private:
-        std::unordered_map<std::string, std::shared_ptr<class PNGImage>> m_cache;
+        std::unordered_map<std::string, std::shared_ptr<PNGImage>> m_cache;
     };
 }
 
