@@ -44,7 +44,7 @@ private:
     void resizeBuffer(size_t width, size_t height);
 private:
     delta_t m_fontSize = 0;
-    dimension_t m_dpi = 96;
+    dimension_t m_dpi = 100;
     std::string m_font;
     std::string m_text;
     double m_angle;

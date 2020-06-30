@@ -177,7 +177,7 @@ void Text::update()
     }
     /* error handling omitted */
 
-    if (FT_Set_Char_Size( face, m_fontSize * 64, 0, m_dpi, 100 ))
+    if (FT_Set_Char_Size( face, m_fontSize * 64, 0, m_dpi, m_dpi ))
     {
         FT_Done_Face(face);
         FT_Done_FreeType(library);
@@ -250,8 +250,8 @@ void Text::update()
         pen.y += slot->advance.y;
     }
 
-    int16_t w = right - left;
-    int16_t h = bottom - top;
+    int16_t w = right - left + 10;
+    int16_t h = bottom - top + 10;
 
     pen.x = 0;
     pen.y = 0;
