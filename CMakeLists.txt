@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(fb VERSION 1.0 DESCRIPTION "A library to draw on Linux Framebuffer")
+project(fb VERSION 1.0 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 11)
 
 if (TARGET_DEVICE)
