@@ -16,33 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ************************************************************************/
+#pragma once
 
-#ifndef PNG_IMAGE_H
-#define PNG_IMAGE_H
-
-#include "pixmap.h"
+#include "drawable.h"
 #include <string>
 #include <stdint.h>
 #include <png.h>
 
-namespace IoT
+BEGIN_LIBFB_NS
+class PNGImage: public Drawable
 {
-    class PNGImage: public Pixmap
-    {
-    public:
-        PNGImage(std::string path = "");
-        ~PNGImage();
-        bool open(std::string path);
-        void close();
-        uint32_t rgba(uint32_t x, uint32_t y) const override;
-        uint32_t width() const override;
-        uint32_t height() const override;
-    private:
-        uint32_t m_width;
-        uint32_t m_height;
-        png_bytep *m_row_pointers;
-    };
-}
+public:
+    PNGImage(std::string path = "");
+    ~PNGImage();
+    bool open(std::string path);
+    void close();
+    color_t get(pos_t x, pos_t y) const override;
+    dimension_t width() const override;
+    dimension_t height() const override;
+private:
+    dimension_t m_width;
+    dimension_t m_height;
+    png_bytep *m_row_pointers;
+};
 
-
-#endif // PNG_IMAGE_H
+END_LIBFB_NS

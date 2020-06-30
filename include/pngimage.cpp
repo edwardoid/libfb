@@ -21,11 +21,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-using namespace IoT;
+BEGIN_LIBFB_NS
 
 PNGImage::PNGImage(std::string path)
-    : Pixmap()
-    , m_width(0)
+    : m_width(0)
     , m_height(0)
     , m_row_pointers(NULL)
 {
@@ -109,7 +108,7 @@ bool PNGImage::open(std::string path)
     return true;
 }
 
-uint32_t PNGImage::rgba(uint32_t x, uint32_t y) const
+color_t PNGImage::get(pos_t x, pos_t y) const
 {
     if (m_height == 0 | m_width == 0) {
         return 0;
@@ -119,12 +118,12 @@ uint32_t PNGImage::rgba(uint32_t x, uint32_t y) const
     return (px[0] << 24) | (px[1] << 16) | (px[2] << 8) | px[3];
 }
 
-uint32_t PNGImage::width() const
+dimension_t PNGImage::width() const
 {
     return m_width;
 }
 
-uint32_t PNGImage::height() const
+dimension_t PNGImage::height() const
 {
     return m_height;
 }
@@ -142,3 +141,5 @@ void PNGImage::close()
         m_row_pointers = NULL;
     }
 }
+
+END_LIBFB_NS

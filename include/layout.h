@@ -19,18 +19,21 @@
 
 #pragma once
 
-#include <string>
-#include <unordered_map>
-#include <memory>
-#include "pngimage.h"
+#include "drawable.h"
+
 
 BEGIN_LIBFB_NS
-class PNGProvider
+
+class Layout: public Drawable
 {
 public:
-    std::shared_ptr<PNGImage> get(std::string path);
-private:
-    std::unordered_map<std::string, std::shared_ptr<PNGImage>> m_cache;
+	Layout(Drawable& m_root);
+	int id(const Drawable& drawable);
+	void add(Drawable& d);
+	void anchorLeft(int left, int right);
+	void anchorRight(int right, int left);
+	void anchorTop(int top, int bottom);
+	void anchorBottom(int bottom, int top);
 };
 
 END_LIBFB_NS

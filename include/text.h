@@ -19,18 +19,39 @@
 
 #pragma once
 
+#include "drawable.h"
 #include <string>
-#include <unordered_map>
-#include <memory>
-#include "pngimage.h"
 
 BEGIN_LIBFB_NS
-class PNGProvider
+
+class Text: public Drawable
 {
 public:
-    std::shared_ptr<PNGImage> get(std::string path);
+    Text();
+    ~Text();
+    virtual dimension_t width() const override;
+    virtual dimension_t height() const override;
+    virtual color_t get(pos_t x, pos_t y) const override;
+    void setText(const std::string& text);
+    void setFont(const std::string& font);
+    void setSize(dimension_t size);
+    void setColor(color_t color);
+    void setAngle(double angle);
+    void setDPI(dimension_t dpi);
 private:
-    std::unordered_map<std::string, std::shared_ptr<PNGImage>> m_cache;
+    void update();
+    void destroyBuffer();
+    void resizeBuffer(size_t width, size_t height);
+private:
+    delta_t m_fontSize = 0;
+    dimension_t m_dpi = 96;
+    std::string m_font;
+    std::string m_text;
+    double m_angle;
+    color_t m_color = INVALID_COLOR;
+    size_t m_bufferRows = 0;
+    size_t m_bufferColumns = 0;
+    uint8_t** m_buffer;
 };
 
 END_LIBFB_NS

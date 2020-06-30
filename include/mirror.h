@@ -19,18 +19,20 @@
 
 #pragma once
 
-#include <string>
-#include <unordered_map>
-#include <memory>
-#include "pngimage.h"
+#include "drawable.h"
 
 BEGIN_LIBFB_NS
-class PNGProvider
+
+class Mirror: public DrawableProxy
 {
 public:
-    std::shared_ptr<PNGImage> get(std::string path);
+    Mirror(const Drawable* source, bool horisontal = false, bool vertical = false);
+    virtual dimension_t width() const override;
+    virtual dimension_t height() const override;
+    virtual color_t get(pos_t x, pos_t y) const override;
 private:
-    std::unordered_map<std::string, std::shared_ptr<PNGImage>> m_cache;
+    bool m_h = false;
+    bool m_v = false;
 };
 
 END_LIBFB_NS

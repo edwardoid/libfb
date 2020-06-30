@@ -17,31 +17,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ************************************************************************/
 
-#ifndef SPRITE_H
-#define SPRITE_H
+#pragma once
 
-#include "pixmap.h"
+#include "drawable.h"
 #include <memory>
 
-namespace IoT
+BEGIN_LIBFB_NS
+class Sprite: public Drawable
 {
-    class Sprite: public Pixmap
-    {
-    public:
-        Sprite(std::shared_ptr<Pixmap> source, uint32_t frameWidth, uint32_t frameHeight, uint32_t framesCount);
-        uint32_t frame() const;
-        void jump(uint32_t idx);
-        uint32_t framesCount() const;
-        uint32_t rgba(uint32_t x, uint32_t y) const override;
-        uint32_t width() const override;
-        uint32_t height() const override;
-    private:
-        std::shared_ptr<Pixmap> m_source;
-        uint32_t m_pos;
-        uint32_t m_frameWidth;
-        uint32_t m_frameHeight;
-        uint32_t m_framesCount;
-    };
-}
+public:
+    Sprite(std::shared_ptr<Drawable> source, dimension_t frameWidth, dimension_t frameHeight, uint32_t framesCount);
+    uint32_t frame() const;
+    void jump(uint32_t idx);
+    uint32_t framesCount() const;
+    virtual color_t get(pos_t x, pos_t y) const override;
+    dimension_t width() const override;
+    dimension_t height() const override;
+private:
+    std::shared_ptr<Drawable> m_source;
+    uint32_t m_pos;
+    dimension_t m_frameWidth;
+    dimension_t m_frameHeight;
+    uint32_t m_framesCount;
+};
 
-#endif // SPRITE_H
+END_LIBFB_NS

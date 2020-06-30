@@ -17,20 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ************************************************************************/
 
-#pragma once
-
-#include <string>
-#include <unordered_map>
-#include <memory>
-#include "pngimage.h"
+#include "helpers.h"
 
 BEGIN_LIBFB_NS
-class PNGProvider
+
+color_t helpers::avg(const std::vector<color_t>& colors)
 {
-public:
-    std::shared_ptr<PNGImage> get(std::string path);
-private:
-    std::unordered_map<std::string, std::shared_ptr<PNGImage>> m_cache;
-};
+    color_t _r = 0, _g = 0, _b = 0, _a = 0;
+    for(auto & _c : colors)
+    {
+        _r += r(_c);
+        _g += g(_c);
+        _b += b(_c);
+        _a += a(_c);
+    }
+
+    return c(_r / colors.size(),
+             _g / colors.size(),
+             _b / colors.size(),
+             _a / colors.size());
+}
 
 END_LIBFB_NS

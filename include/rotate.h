@@ -17,20 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ************************************************************************/
 
-#ifndef PIXMAP_H
-#define PIXMAP_H
+#pragma once
 
-#include <stdint.h>
+#include "drawable.h"
+#include <vector>
 
-namespace IoT
+BEGIN_LIBFB_NS
+
+class Rotate: public DrawableProxy
 {
-    class Pixmap
-    {
-    public:
-        virtual uint32_t width() const = 0;
-        virtual uint32_t height() const = 0;
-        virtual uint32_t rgba(uint32_t x, uint32_t y) const = 0;
-    };
-}
+public:
+    Rotate(const Drawable* source, float degrees);
+    void setAngle(float degree);
+    void setAngleInRadians(float radians);
+    virtual dimension_t width() const override;
+    virtual dimension_t height() const override;
+    virtual color_t get(pos_t x, pos_t y) const override;
+private:
+    void rotate();
+private:
+    float m_angle = 0;
+    std::vector<std::vector<color_t> > m_rotated;
+};
 
-#endif // PIXMAP_H
+END_LIBFB_NS

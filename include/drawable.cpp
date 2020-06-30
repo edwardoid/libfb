@@ -17,20 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ************************************************************************/
 
-#pragma once
-
-#include <string>
-#include <unordered_map>
-#include <memory>
-#include "pngimage.h"
+#include "drawable.h"
 
 BEGIN_LIBFB_NS
-class PNGProvider
+
+pos_t Drawable::x() const
 {
-public:
-    std::shared_ptr<PNGImage> get(std::string path);
-private:
-    std::unordered_map<std::string, std::shared_ptr<PNGImage>> m_cache;
-};
+    return m_x;
+}
+
+pos_t Drawable::y() const
+{
+    return m_y;
+}
+
+void Drawable::mapTo(pos_t x, pos_t y)
+{
+    m_x = x;
+    m_y = y;
+}
+
+DrawableProxy::DrawableProxy(const Drawable* source)
+    : m_source(source)
+{
+    m_x = source->x();
+    m_y = source->y();
+}
 
 END_LIBFB_NS

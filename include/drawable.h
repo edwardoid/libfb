@@ -19,18 +19,31 @@
 
 #pragma once
 
-#include <string>
-#include <unordered_map>
-#include <memory>
-#include "pngimage.h"
+#include "globals.h"
 
 BEGIN_LIBFB_NS
-class PNGProvider
+
+class Drawable
 {
 public:
-    std::shared_ptr<PNGImage> get(std::string path);
-private:
-    std::unordered_map<std::string, std::shared_ptr<PNGImage>> m_cache;
+    virtual pos_t x() const;
+    virtual pos_t y() const;
+    virtual void mapTo(pos_t x, pos_t y);
+    virtual dimension_t width() const = 0;
+    virtual dimension_t height() const = 0;
+    virtual color_t get(pos_t x, pos_t y) const = 0;
+protected:
+    pos_t m_x = 0;
+    pos_t m_y = 0;
+};
+
+class DrawableProxy: public Drawable
+{
+public:
+    DrawableProxy(const Drawable* source);
+
+protected:
+    const Drawable* m_source;
 };
 
 END_LIBFB_NS

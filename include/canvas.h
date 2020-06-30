@@ -19,18 +19,28 @@
 
 #pragma once
 
-#include <string>
-#include <unordered_map>
-#include <memory>
-#include "pngimage.h"
+#include "drawable.h"
+#include <vector>
+#include <map>
 
 BEGIN_LIBFB_NS
-class PNGProvider
+
+typedef std::vector<Drawable*> Layer;
+
+class Canvas
 {
 public:
-    std::shared_ptr<PNGImage> get(std::string path);
+    using zorder_t = int8_t;
+    Canvas(dimension_t width, dimension_t height);
+    dimension_t width() const;
+    dimension_t height() const;
+
+    Layer& addLayer(zorder_t z, Drawable* item = nullptr);
+    void dropLayer(zorder_t);
+	bool hasLayer(zorder_t z) const;
+	Layer& layer(zorder_t z);
 private:
-    std::unordered_map<std::string, std::shared_ptr<PNGImage>> m_cache;
+    std::map<zorder_t, Layer> m_layers;
 };
 
 END_LIBFB_NS

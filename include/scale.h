@@ -19,18 +19,27 @@
 
 #pragma once
 
-#include <string>
-#include <unordered_map>
-#include <memory>
-#include "pngimage.h"
+#include "drawable.h"
+#include <vector>
 
 BEGIN_LIBFB_NS
-class PNGProvider
+
+class Scale: public DrawableProxy
 {
 public:
-    std::shared_ptr<PNGImage> get(std::string path);
+	Scale(const Drawable* d, float factorX = 1., float factorY = 1.);
+    float factorX() const;
+    float factorY() const;
+    void setFactorX(float factor = 1.);
+    void setFactorY(float factor = 1.);
+    virtual dimension_t width() const override;
+    virtual dimension_t height() const override;
+    virtual color_t get(pos_t x, pos_t y) const override;
 private:
-    std::unordered_map<std::string, std::shared_ptr<PNGImage>> m_cache;
+    color_t average(std::vector<color_t> colors);
+private:
+    float m_factorX = 1.;
+    float m_factorY = 1.;
 };
 
 END_LIBFB_NS

@@ -19,18 +19,37 @@
 
 #pragma once
 
+#include <drawable.h>
+#include <helpers.h>
+#include <qrencode.h>
 #include <string>
-#include <unordered_map>
-#include <memory>
-#include "pngimage.h"
 
 BEGIN_LIBFB_NS
-class PNGProvider
+
+class QRCode: public Drawable
 {
 public:
-    std::shared_ptr<PNGImage> get(std::string path);
+    QRCode() = default;
+    virtual ~QRCode();
+    void resizeTo(dimension_t desiredSize);
+    void setText(std::string data);
+    void setCorrectionLevel(QRecLevel level);
+    void setMode(QRencodeMode mode);
+    dimension_t size() const;
+    virtual dimension_t width() const;
+    virtual dimension_t height() const;
+    virtual color_t get(pos_t x, pos_t y) const;
+    void setColors(color_t foreground, color_t background = helpers::c(0xFF, 0xFF, 0xFF, 0));
 private:
-    std::unordered_map<std::string, std::shared_ptr<PNGImage>> m_cache;
+    void update();
+private:
+    QRecLevel m_level = QRecLevel::QR_ECLEVEL_M;
+    QRencodeMode m_mode = QRencodeMode::QR_MODE_8;
+    std::string m_text;
+    dimension_t m_desiredSize = 1;
+    QRcode* m_data = nullptr;
+    color_t m_fg = 0x000000FF;
+    color_t m_bg = 0xFFFFFFFF;
 };
 
 END_LIBFB_NS

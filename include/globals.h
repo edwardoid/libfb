@@ -19,18 +19,25 @@
 
 #pragma once
 
-#include <string>
-#include <unordered_map>
-#include <memory>
-#include "pngimage.h"
+
+#include <cstdint>
+#include <stdint.h>
+
+#ifndef LIBFB_NS
+    #define LIBFB_NS libfb
+#endif // LIBFB_NS
+
+#define BEGIN_LIBFB_NS namespace LIBFB_NS {
+#define END_LIBFB_NS }
 
 BEGIN_LIBFB_NS
-class PNGProvider
-{
-public:
-    std::shared_ptr<PNGImage> get(std::string path);
-private:
-    std::unordered_map<std::string, std::shared_ptr<PNGImage>> m_cache;
-};
+
+using color_t = std::uint32_t;
+
+#define INVALID_COLOR ((color_t) -1)
+
+using pos_t = std::int16_t;
+using delta_t = std::int32_t;
+using dimension_t = std::int16_t;
 
 END_LIBFB_NS

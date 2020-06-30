@@ -20,9 +20,9 @@
 #include "sprite.h"
 #include "log.h"
 
-using namespace IoT;
+BEGIN_LIBFB_NS
 
-Sprite::Sprite(std::shared_ptr<Pixmap> source, uint32_t frameWidth, uint32_t frameHeight, uint32_t framesCount)
+Sprite::Sprite(std::shared_ptr<Drawable> source, dimension_t frameWidth, dimension_t frameHeight, uint32_t framesCount)
     : m_source(source)
     , m_framesCount(framesCount)
     , m_frameWidth(0)
@@ -55,21 +55,23 @@ uint32_t Sprite::framesCount() const
     return m_framesCount;
 }
 
-uint32_t Sprite::rgba(uint32_t x, uint32_t y) const
+color_t Sprite::get(pos_t x, pos_t y) const
 {
     if (m_framesCount == 0) {
         return 0;
     }
 
-    return m_source->rgba(m_pos * m_frameWidth + x, y);
+    return m_source->get(m_pos * m_frameWidth + x, y);
 }
 
-uint32_t Sprite::width() const
+dimension_t Sprite::width() const
 {
     return m_frameWidth;
 }
 
-uint32_t Sprite::height() const
+dimension_t Sprite::height() const
 {
     return m_frameHeight;
 }
+
+END_LIBFB_NS
