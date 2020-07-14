@@ -312,8 +312,6 @@ void Text::update()
         previous = glyph_index;
     }
 
-    DEBUG << "Unloading lib";
-
     FT_Done_Face( face );
     FT_Done_FreeType( library );
 }
