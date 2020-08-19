@@ -20,15 +20,9 @@
 #include "sprite.h"
 #include "log.h"
 
-<<<<<<< HEAD
 BEGIN_LIBFB_NS
 
 Sprite::Sprite(std::shared_ptr<Drawable> source, dimension_t frameWidth, dimension_t frameHeight, uint32_t framesCount)
-=======
-using namespace IoT;
-
-Sprite::Sprite(std::shared_ptr<Pixmap> source, uint32_t frameWidth, uint32_t frameHeight, uint32_t framesCount)
->>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd
     : m_source(source)
     , m_framesCount(framesCount)
     , m_frameWidth(0)
@@ -61,41 +55,23 @@ uint32_t Sprite::framesCount() const
     return m_framesCount;
 }
 
-<<<<<<< HEAD
 color_t Sprite::get(pos_t x, pos_t y) const
-=======
-uint32_t Sprite::rgba(uint32_t x, uint32_t y) const
->>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd
 {
     if (m_framesCount == 0) {
         return 0;
     }
 
-<<<<<<< HEAD
     return m_source->get(m_pos * m_frameWidth + x, y);
 }
 
 dimension_t Sprite::width() const
-=======
-    return m_source->rgba(m_pos * m_frameWidth + x, y);
-}
-
-uint32_t Sprite::width() const
->>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd
 {
     return m_frameWidth;
 }
 
-<<<<<<< HEAD
 dimension_t Sprite::height() const
 {
     return m_frameHeight;
 }
 
 END_LIBFB_NS
-=======
-uint32_t Sprite::height() const
-{
-    return m_frameHeight;
-}
->>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd

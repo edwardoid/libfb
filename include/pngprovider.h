@@ -17,19 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ************************************************************************/
 
-<<<<<<< HEAD
 #pragma once
-=======
-#ifndef PNG_PROVIDER_H
-#define PNG_PROVIDER_H
->>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd
 
 #include <string>
 #include <unordered_map>
 #include <memory>
 #include "pngimage.h"
 
-<<<<<<< HEAD
 BEGIN_LIBFB_NS
 class PNGProvider
 {
@@ -40,17 +34,3 @@ private:
 };
 
 END_LIBFB_NS
-=======
-namespace IoT
-{
-    class PNGProvider
-    {
-    public:
-        std::shared_ptr<PNGImage> get(std::string path);
-    private:
-        std::unordered_map<std::string, std::shared_ptr<PNGImage>> m_cache;
-    };
-}
-
-#endif // PNG_PROVIDER_H
->>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd
