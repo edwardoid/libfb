@@ -19,8 +19,17 @@
 
 #include "framebuffer.h"
 #include "log.h"
+<<<<<<< HEAD
 #include <stdio.h>
 #include <stdlib.h>
+=======
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include <stdio.h>
+#include <stdlib.h>
+#include <wchar.h>
+#include <string.h>
+>>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd
 #include <stdbool.h>
 #include <unistd.h>
 #include <math.h>
@@ -32,7 +41,11 @@
 #include <errno.h>
 #include <iostream>
 
+<<<<<<< HEAD
 BEGIN_LIBFB_NS
+=======
+using namespace IoT;
+>>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd
 
 FrameBuffer::Color FrameBuffer::convert(uint32_t rgb)
 {
@@ -207,7 +220,11 @@ void FrameBuffer::drawLine(uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2, u
 }
 
 void FrameBuffer::flush() {
+<<<<<<< HEAD
     if (m_mem != nullptr && memcmp(m_hw, m_mem, m_fixInfo.smem_len) != 0) {
+=======
+    if (m_mem != nullptr) {
+>>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd
         memcpy(m_hw, m_mem, m_fixInfo.smem_len);
     }
 }
@@ -239,6 +256,7 @@ bool FrameBuffer::close()
     return true;
 }
 
+<<<<<<< HEAD
 void FrameBuffer::draw(const Drawable* d)
 {
     pos_t x = d->x();
@@ -250,6 +268,457 @@ void FrameBuffer::draw(const Drawable* d)
             uint32_t pos = offset(x + i, y + j);
             uint32_t px = d->get(i, j);
             if (pos != -1 && px != INVALID_COLOR) {
+=======
+void FrameBuffer::textSize(std::string font, uint32_t fontsize, std::string text, double angle, uint32_t& width, uint32_t& height)
+{
+    width = height = 0;
+    FT_Library library;
+    FT_Face face;
+    FT_Matrix matrix; // transformation matrix
+    FT_Vector pen;
+
+    FT_UInt glyph_index;
+    FT_Error error;
+
+    FT_Bool use_kerning;
+    FT_UInt previous = 0;
+
+    /* Set up transformation Matrix */
+    matrix.xx = (FT_Fixed)(cos(angle) * 0x10000);  /* It would make more sense to do this (below), but, bizzarely, */
+    matrix.xy = (FT_Fixed)(-sin(angle) * 0x10000); /* if one does, FT_Load_Glyph fails consistently.               */
+    matrix.yx = (FT_Fixed)(sin(angle) * 0x10000);  //   matrix.yx = - matrix.xy;
+    matrix.yy = (FT_Fixed)(cos(angle) * 0x10000);  //   matrix.yy = matrix.xx;
+
+  /* Place starting coordinates in adequate form. */
+    pen.x = 0;
+    pen.y = 0;
+
+    int num_bytes = 0;
+    while (text[num_bytes] != 0) {
+       num_bytes++;
+    }
+
+
+    long *ucs4text;
+    ucs4text = new long[num_bytes + 1];
+
+    unsigned char u, v, w, x, y;
+
+    int num_chars = 0;
+
+    long iii = 0;
+
+    while (iii < num_bytes) {
+        unsigned char const z = text[iii];
+
+        if (z <= 127) {
+            ucs4text[num_chars] = z;
+        }
+
+        if ((192 <= z) && (z <= 223)) {
+            iii++;
+            y = text[iii];
+            ucs4text[num_chars] = (z - 192) * 64 + (y - 128);
+        }
+
+        if ((224 <= z) && (z <= 239)) {
+            iii++;
+            y = text[iii];
+            iii++;
+            x = text[iii];
+            ucs4text[num_chars] = (z - 224) * 4096 + (y - 128) * 64 + (x - 128);
+        }
+
+        if ((240 <= z) && (z <= 247)) {
+            iii++;
+            y = text[iii];
+            iii++;
+            x = text[iii];
+            iii++;
+            w = text[iii];
+            ucs4text[num_chars] = (z - 240) * 262144 + (y - 128) * 4096 + (x - 128) * 64 + (w - 128);
+        }
+
+        if ((248 <= z) && (z <= 251)) {
+            iii++;
+            y = text[iii];
+            iii++;
+            x = text[iii];
+            iii++;
+            w = text[iii];
+            iii++;
+            v = text[iii];
+            ucs4text[num_chars] = (z - 248) * 16777216 + (y - 128) * 262144 + (x - 128) * 4096 + (w - 128) * 64 + (v - 128);
+        }
+
+        if ((252 == z) || (z == 253)) {
+            iii++;
+            y = text[iii];
+            iii++;
+            x = text[iii];
+            iii++;
+            w = text[iii];
+            iii++;
+            v = text[iii];
+            u = text[iii];
+            ucs4text[num_chars] = (z - 252) * 1073741824 + (y - 128) * 16777216 + (x - 128) * 262144 + (w - 128) * 4096 + (v - 128) * 64 + (u - 128);
+        }
+
+        if ((z == 254) || (z == 255))
+        {
+            LOG_WARNING << "Problem with character: invalid UTF-8 data." << std::endl;
+            return;
+        }
+        iii++;
+        num_chars++;
+    }
+
+    // num_chars now contains the number of characters in the string.
+    /* Initialize FT Library object */
+    error = FT_Init_FreeType(&library);
+    if (error) {
+        LOG_WARNING << "FreeType: Could not init Library." << std::endl;
+        delete[] ucs4text;
+        return;
+    }
+
+    /* Initialize FT face object */
+    error = FT_New_Face(library, font.c_str(), 0, &face);
+    if (error == FT_Err_Unknown_File_Format) {
+        LOG_WARNING << "FreeType: Font was opened, but type not supported." << std::endl;
+        delete[] ucs4text;
+        return;
+    }
+    else if (error)
+    {
+        LOG_WARNING << "FreeType: Could not find or load font file." << std::endl;
+        delete[] ucs4text;
+        return;
+    }
+
+    /* Set the Char size */
+    error = FT_Set_Char_Size(face,          /* handle to face object           */
+                             0,             /* char_width in 1/64th of points  */
+                             fontsize * 64, /* char_height in 1/64th of points */
+                             100,           /* horizontal device resolution    */
+                             100);          /* vertical device resolution      */
+
+    /* A way of accesing the glyph directly */
+    FT_GlyphSlot slot = face->glyph; // a small shortcut
+
+    /* Does the font file support kerning? */
+    use_kerning = FT_HAS_KERNING(face);
+
+    uint32_t estimatedWidth = 0;
+
+    for (int n = 0; n < num_chars; n++) {
+        /* Convert character code to glyph index */
+        glyph_index = FT_Get_Char_Index(face, ucs4text[n]);
+
+        /* Retrieve kerning distance and move pen position */
+        if (use_kerning && previous && glyph_index) {
+            FT_Vector delta;
+            FT_Get_Kerning(face,
+                           previous,
+                           glyph_index,
+                           ft_kerning_default, //FT_KERNING_DEFAULT,
+                          &delta);
+
+            /* Transform this kerning distance into rotated space */
+            pen.x += (int)(((double)delta.x) * cos(angle));
+            pen.y += (int)(((double)delta.x) * (sin(angle)));
+        }
+
+        /* Set transform */
+        FT_Set_Transform(face, &matrix, &pen);
+
+        if (error) {
+            LOG_WARNING << "FreeType: Set char size error.";
+            delete[] ucs4text;
+            return;
+        }
+
+        /* Retrieve glyph index from character code */
+        glyph_index = FT_Get_Char_Index(face, ucs4text[n]);
+
+        /* Load glyph image into the slot (erase previous one) */
+        error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
+        if (error) {
+            LOG_WARNING << "FreeType: Could not load glyph (in loop). (FreeType error " << std::hex << error << ").";
+            delete[] ucs4text;
+            return;
+        }
+
+        /* Convert to an anti-aliased bitmap */
+        error = FT_Render_Glyph(face->glyph, ft_render_mode_normal);
+        if (error) {
+            LOG_WARNING << "FreeType: Render glyph error.";
+            delete[] ucs4text;
+            return;
+        }
+
+        if (n == 0 || height < (fontsize - slot->bitmap_top + slot->bitmap.rows)) {
+            height = fontsize - slot->bitmap_top + slot->bitmap.rows;
+        }
+        if (n = 0 || width < (slot->bitmap_left + slot->bitmap.width)) {
+            width = slot->bitmap_left + slot->bitmap.width;
+        }
+
+        /* Advance to the next position */
+        pen.x += slot->advance.x;
+        pen.y += slot->advance.y;
+
+        /* record current glyph index */
+        previous = glyph_index;
+    }
+
+    /* Free the face and the library objects */
+    FT_Done_Face(face);
+    FT_Done_FreeType(library);
+
+    delete[] ucs4text;
+}
+
+bool FrameBuffer::drawText(std::string font, uint32_t fontsize, uint32_t x_start, uint32_t y_start, double angle, std::string text, uint32_t color)
+{
+    FT_Library library;
+    FT_Face face;
+    FT_Matrix matrix; // transformation matrix
+    FT_Vector pen;
+
+    FT_UInt glyph_index;
+    FT_Error error;
+
+    FT_Bool use_kerning;
+    FT_UInt previous = 0;
+
+    /* Set up transformation Matrix */
+    matrix.xx = (FT_Fixed)(cos(angle) * 0x10000);  /* It would make more sense to do this (below), but, bizzarely, */
+    matrix.xy = (FT_Fixed)(-sin(angle) * 0x10000); /* if one does, FT_Load_Glyph fails consistently.               */
+    matrix.yx = (FT_Fixed)(sin(angle) * 0x10000);  //   matrix.yx = - matrix.xy;
+    matrix.yy = (FT_Fixed)(cos(angle) * 0x10000);  //   matrix.yy = matrix.xx;
+
+  /* Place starting coordinates in adequate form. */
+    pen.x = x_start * 64;
+    pen.y = (int)(y_start / 64.0);
+
+    int num_bytes = 0;
+    while (text[num_bytes] != 0) {
+       num_bytes++;
+    }
+
+
+    long *ucs4text;
+    ucs4text = new long[num_bytes + 1];
+
+    unsigned char u, v, w, x, y;
+
+    int num_chars = 0;
+
+    long iii = 0;
+
+    while (iii < num_bytes) {
+        unsigned char const z = text[iii];
+
+        if (z <= 127) {
+            ucs4text[num_chars] = z;
+        }
+
+        if ((192 <= z) && (z <= 223)) {
+            iii++;
+            y = text[iii];
+            ucs4text[num_chars] = (z - 192) * 64 + (y - 128);
+        }
+
+        if ((224 <= z) && (z <= 239)) {
+            iii++;
+            y = text[iii];
+            iii++;
+            x = text[iii];
+            ucs4text[num_chars] = (z - 224) * 4096 + (y - 128) * 64 + (x - 128);
+        }
+
+        if ((240 <= z) && (z <= 247)) {
+            iii++;
+            y = text[iii];
+            iii++;
+            x = text[iii];
+            iii++;
+            w = text[iii];
+            ucs4text[num_chars] = (z - 240) * 262144 + (y - 128) * 4096 + (x - 128) * 64 + (w - 128);
+        }
+
+        if ((248 <= z) && (z <= 251)) {
+            iii++;
+            y = text[iii];
+            iii++;
+            x = text[iii];
+            iii++;
+            w = text[iii];
+            iii++;
+            v = text[iii];
+            ucs4text[num_chars] = (z - 248) * 16777216 + (y - 128) * 262144 + (x - 128) * 4096 + (w - 128) * 64 + (v - 128);
+        }
+
+        if ((252 == z) || (z == 253)) {
+            iii++;
+            y = text[iii];
+            iii++;
+            x = text[iii];
+            iii++;
+            w = text[iii];
+            iii++;
+            v = text[iii];
+            u = text[iii];
+            ucs4text[num_chars] = (z - 252) * 1073741824 + (y - 128) * 16777216 + (x - 128) * 262144 + (w - 128) * 4096 + (v - 128) * 64 + (u - 128);
+        }
+
+        if ((z == 254) || (z == 255))
+        {
+            LOG_WARNING << "Problem with character: invalid UTF-8 data." << std::endl;
+            return false;
+        }
+        iii++;
+        num_chars++;
+    }
+
+    // num_chars now contains the number of characters in the string.
+    /* Initialize FT Library object */
+    error = FT_Init_FreeType(&library);
+    if (error) {
+        LOG_WARNING << "FreeType: Could not init Library." << std::endl;
+        delete[] ucs4text;
+        return false;
+    }
+
+    /* Initialize FT face object */
+    error = FT_New_Face(library, font.c_str(), 0, &face);
+    if (error == FT_Err_Unknown_File_Format) {
+        LOG_WARNING << "FreeType: Font was opened, but type not supported." << std::endl;
+        delete[] ucs4text;
+        return false;
+    }
+    else if (error)
+    {
+        LOG_WARNING << "FreeType: Could not find or load font file." << std::endl;
+        delete[] ucs4text;
+        return false;
+    }
+
+    /* Set the Char size */
+    error = FT_Set_Char_Size(face,          /* handle to face object           */
+                             0,             /* char_width in 1/64th of points  */
+                             fontsize * 64, /* char_height in 1/64th of points */
+                             100,           /* horizontal device resolution    */
+                             100);          /* vertical device resolution      */
+
+    /* A way of accesing the glyph directly */
+    FT_GlyphSlot slot = face->glyph; // a small shortcut
+
+    /* Does the font file support kerning? */
+    use_kerning = FT_HAS_KERNING(face);
+
+    for (int n = 0; n < num_chars; n++) {
+        /* Convert character code to glyph index */
+        glyph_index = FT_Get_Char_Index(face, ucs4text[n]);
+
+        /* Retrieve kerning distance and move pen position */
+        if (use_kerning && previous && glyph_index) {
+            FT_Vector delta;
+            FT_Get_Kerning(face,
+                           previous,
+                           glyph_index,
+                           ft_kerning_default, //FT_KERNING_DEFAULT,
+                          &delta);
+
+            /* Transform this kerning distance into rotated space */
+            pen.x += (int)(((double)delta.x) * cos(angle));
+            pen.y += (int)(((double)delta.x) * (sin(angle)));
+        }
+
+        /* Set transform */
+        FT_Set_Transform(face, &matrix, &pen);
+
+        if (error) {
+            LOG_WARNING << "FreeType: Set char size error.";
+            delete[] ucs4text;
+            return false;
+        }
+
+        /* Retrieve glyph index from character code */
+        glyph_index = FT_Get_Char_Index(face, ucs4text[n]);
+
+        /* Load glyph image into the slot (erase previous one) */
+        error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
+        if (error) {
+            LOG_WARNING << "FreeType: Could not load glyph (in loop). (FreeType error " << std::hex << error << ").";
+            delete[] ucs4text;
+            return false;
+        }
+
+        /* Convert to an anti-aliased bitmap */
+        error = FT_Render_Glyph(face->glyph, ft_render_mode_normal);
+        if (error) {
+            LOG_WARNING << "FreeType: Render glyph error.";
+            delete[] ucs4text;
+            return false;
+        }
+
+        /* Now, draw to our target surface */
+        drawBitmap(slot->bitmap_left, y_start + (fontsize - slot->bitmap_top),
+                   slot->bitmap.buffer, slot->bitmap.width, slot->bitmap.rows,
+                   color);
+
+        /* Advance to the next position */
+        pen.x += slot->advance.x;
+        pen.y += slot->advance.y;
+
+        /* record current glyph index */
+        previous = glyph_index;
+    }
+
+    /* Free the face and the library objects */
+    FT_Done_Face(face);
+    FT_Done_FreeType(library);
+
+    delete[] ucs4text;
+    return true;
+}
+
+void FrameBuffer::drawBitmap(uint32_t x, uint32_t y, uint8_t* bitmap, uint32_t width, uint32_t height, uint32_t color)
+{
+    uint32_t Bpp = bytesPerPixel();
+    for (uint32_t i = 0; i < width; ++i) {
+        for (uint32_t j = 0; j < height; ++j) {
+
+            uint32_t pos = offset(x + i, y + j);
+            if (bitmap[j * width + i] && pos != -1) {
+                double alpha = (double)bitmap[j * width + i] / 255.;
+
+                Color bg = convert(m_mem + pos);
+                Color fg = convert(color);
+
+                fg.r = alpha * (double) fg.r + (1. - alpha) * (double) bg.r;
+                fg.g = alpha * (double) fg.g + (1. - alpha) * (double) bg.g;
+                fg.b = alpha * (double) fg.b + (1. - alpha) * (double) bg.b;
+
+                Color c = convert(fg.r << 16 | fg.g << 8 | fg.b);
+                memcpy(m_mem + pos, c.data, Bpp);
+            }
+        }
+    }
+}
+
+void FrameBuffer::drawPixmap(uint32_t x, uint32_t y, const Pixmap* pixmap)
+{
+    uint32_t Bpp = bytesPerPixel();
+    for (uint32_t i = 0; i < pixmap->width(); ++i) {
+        for (uint32_t j = 0; j < pixmap->height(); ++j) {
+
+            uint32_t pos = offset(x + i, y + j);
+            uint32_t px = pixmap->rgba(i, j);
+            if (pos != -1) {
+>>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd
                 double alpha = (double)(px & 0xFF) / 255.;
 
                 Color bg = convert(m_mem + pos);
@@ -266,6 +735,29 @@ void FrameBuffer::draw(const Drawable* d)
     }
 }
 
+<<<<<<< HEAD
+=======
+uint32_t FrameBuffer::drawQRCode(QRcode* code, uint32_t x, uint32_t y, uint32_t width, uint32_t color)
+{
+    Color c = convert(color);
+    Color bg = convert(~color);
+    uint32_t Bpp = bytesPerPixel();
+    int len = floor((double)width / (double)code->width);
+    for(uint32_t i = 0; i < code->width; ++i) {
+        for(uint32_t j = 0; j < code->width; ++j) {
+            if (code->data[i * code->width + j] & 1)
+                fillRect(x + i * len, y + j * len, len, len, c);
+        }
+    }
+    return len * code->width;
+}
+
+uint32_t FrameBuffer::qrCodeSize(QRcode* code, uint32_t width) const
+{
+    return floor((double)width / (double)code->width) * code->width;
+}
+
+>>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd
 void FrameBuffer::fillRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t color)
 {
     Color c = convert(color);
@@ -318,5 +810,8 @@ void FrameBuffer::drawRect(uint32_t x, uint32_t y, uint32_t width, uint32_t heig
         }
     }
 }
+<<<<<<< HEAD
 
 END_LIBFB_NS
+=======
+>>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd

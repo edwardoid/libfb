@@ -16,13 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ************************************************************************/
+<<<<<<< HEAD
 #pragma once
 
 #include "drawable.h"
+=======
+
+#ifndef PNG_IMAGE_H
+#define PNG_IMAGE_H
+
+#include "pixmap.h"
+>>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd
 #include <string>
 #include <stdint.h>
 #include <png.h>
 
+<<<<<<< HEAD
 BEGIN_LIBFB_NS
 class PNGImage: public Drawable
 {
@@ -41,3 +50,26 @@ private:
 };
 
 END_LIBFB_NS
+=======
+namespace IoT
+{
+    class PNGImage: public Pixmap
+    {
+    public:
+        PNGImage(std::string path = "");
+        ~PNGImage();
+        bool open(std::string path);
+        void close();
+        uint32_t rgba(uint32_t x, uint32_t y) const override;
+        uint32_t width() const override;
+        uint32_t height() const override;
+    private:
+        uint32_t m_width;
+        uint32_t m_height;
+        png_bytep *m_row_pointers;
+    };
+}
+
+
+#endif // PNG_IMAGE_H
+>>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd

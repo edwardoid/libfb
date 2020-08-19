@@ -21,10 +21,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+<<<<<<< HEAD
 BEGIN_LIBFB_NS
 
 PNGImage::PNGImage(std::string path)
     : m_width(0)
+=======
+using namespace IoT;
+
+PNGImage::PNGImage(std::string path)
+    : Pixmap()
+    , m_width(0)
+>>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd
     , m_height(0)
     , m_row_pointers(NULL)
 {
@@ -108,7 +116,11 @@ bool PNGImage::open(std::string path)
     return true;
 }
 
+<<<<<<< HEAD
 color_t PNGImage::get(pos_t x, pos_t y) const
+=======
+uint32_t PNGImage::rgba(uint32_t x, uint32_t y) const
+>>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd
 {
     if (m_height == 0 | m_width == 0) {
         return 0;
@@ -118,12 +130,20 @@ color_t PNGImage::get(pos_t x, pos_t y) const
     return (px[0] << 24) | (px[1] << 16) | (px[2] << 8) | px[3];
 }
 
+<<<<<<< HEAD
 dimension_t PNGImage::width() const
+=======
+uint32_t PNGImage::width() const
+>>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd
 {
     return m_width;
 }
 
+<<<<<<< HEAD
 dimension_t PNGImage::height() const
+=======
+uint32_t PNGImage::height() const
+>>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd
 {
     return m_height;
 }
@@ -140,6 +160,10 @@ void PNGImage::close()
         free(m_row_pointers);
         m_row_pointers = NULL;
     }
+<<<<<<< HEAD
 }
 
 END_LIBFB_NS
+=======
+}
+>>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd

@@ -19,7 +19,11 @@
 
 #include "pngprovider.h"
 
+<<<<<<< HEAD
 BEGIN_LIBFB_NS
+=======
+using namespace IoT;
+>>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd
 
 std::shared_ptr<PNGImage> PNGProvider::get(std::string path)
 {
@@ -36,5 +40,8 @@ std::shared_ptr<PNGImage> PNGProvider::get(std::string path)
 
     return m_cache[path];
 }
+<<<<<<< HEAD
 
 END_LIBFB_NS
+=======
+>>>>>>> b5f68606ae5e04f9fe26aa0cd5bd8994a337e4dd
