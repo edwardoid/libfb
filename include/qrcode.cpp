@@ -11,7 +11,7 @@ void QRCode::update()
     }
 
     if (m_data != nullptr) {
-        delete m_data;
+        QRcode_free(m_data);
     }
 
     m_data = qrcode;
@@ -69,7 +69,7 @@ void QRCode::resizeTo(dimension_t desiredSize)
 QRCode::~QRCode()
 {
     if (m_data != nullptr) {
-        delete m_data;
+        QRcode_free(m_data);;
     }
 }
 

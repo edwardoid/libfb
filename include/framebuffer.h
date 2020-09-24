@@ -28,11 +28,11 @@ BEGIN_LIBFB_NS
 class FrameBuffer
 {
 public:
-    FrameBuffer(std::string device);
+    FrameBuffer(std::string device = "");
     ~FrameBuffer();
     uint32_t bitsPerPixel() const;
     uint32_t bytesPerPixel() const;
-    bool open();
+    bool open(std::string device = "");
     bool close();
     void clear(uint32_t color = 0x000000);
     void flush();
@@ -65,7 +65,7 @@ private:
     void drawRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, const Color& c);
 private:
     std::string m_device;
-    int m_fbd;
+    int m_fbd = 0;
     struct fb_var_screeninfo m_varInfo;
     struct fb_fix_screeninfo m_fixInfo;
     uint8_t* m_mem;

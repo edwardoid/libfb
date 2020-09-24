@@ -104,6 +104,9 @@ bool PNGImage::open(std::string path)
 
     png_read_image(png, m_row_pointers);
 
+    png_read_end(png, NULL);
+    png_destroy_read_struct(&png, &info, NULL);
+
     fclose(fp);
     return true;
 }

@@ -111,8 +111,11 @@ uint32_t FrameBuffer::offset(uint32_t x, uint32_t y)
 FrameBuffer::FrameBuffer(std::string device)
     : m_device(device)
     , m_mem(nullptr)
+    , m_hw(nullptr)
+    , m_len(0)
 {
-
+    memset(&m_fixInfo, 0, sizeof(fb_fix_screeninfo));
+    memset(&m_varInfo, 0, sizeof(fb_fix_screeninfo));
 }
 FrameBuffer::~FrameBuffer() {
     close();
@@ -138,8 +141,20 @@ uint32_t FrameBuffer::bytesPerPixel() const
     return m_varInfo.bits_per_pixel / 8;
 }
 
-bool FrameBuffer::open()
+bool FrameBuffer::open(std::string device)
 {
+    close();
+
+    if (device.empty())
+    {
+        device = m_device;
+    } else {
+        m_device = device;
+    }
+    if (m_device.empty())
+    {
+        return false;
+    }
     m_fbd = ::open(m_device.c_str(), O_RDWR);
     if (m_fbd < 1) {
         m_fbd = 0;
@@ -165,12 +180,15 @@ bool FrameBuffer::open()
 
 void FrameBuffer::clear(uint32_t color)
 {
+    if (m_fbd == 0) {
+        return;
+    }
     if (color == 0)
         memset(m_mem, 0x0, m_fixInfo.smem_len);
     else {
         Color c = convert(color);
         uint32_t Bpp = bytesPerPixel();
-        for(uint32_t i = 0; i < m_fixInfo.smem_len / Bpp; ++i) {
+        for(uint32_t i = 0; Bpp > 0 && i < m_fixInfo.smem_len / Bpp; ++i) {
             memcpy(m_mem + i * Bpp, c.data, Bpp);
         }
     }
@@ -178,6 +196,9 @@ void FrameBuffer::clear(uint32_t color)
 
 void FrameBuffer::drawPoint(uint32_t x, uint32_t y, uint32_t rgb)
 {
+    if (m_fbd == 0) {
+        return;
+    }
     uint32_t pos = offset(x, y);
     if(pos == -1)
         return;
@@ -187,6 +208,9 @@ void FrameBuffer::drawPoint(uint32_t x, uint32_t y, uint32_t rgb)
 
 void FrameBuffer::drawLine(uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2, uint32_t rgb)
 {
+    if (m_fbd == 0) {
+        return;
+    }
     int32_t dx = x2 - x1;
     int32_t dy = y2 - y1;
     int32_t D = 2*dy - dx;
@@ -208,6 +232,9 @@ void FrameBuffer::drawLine(uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2, u
 }
 
 void FrameBuffer::flush() {
+    if (m_fbd == 0) {
+        return;
+    }
     if (m_mem != nullptr && memcmp(m_hw, m_mem, m_fixInfo.smem_len) != 0) {
         memcpy(m_hw, m_mem, m_fixInfo.smem_len);
     }
@@ -215,6 +242,9 @@ void FrameBuffer::flush() {
 
 void FrameBuffer::refresh()
 {
+    if (m_fbd == 0) {
+        return;
+    }
     //munmap(m_mem, m_fixInfo.smem_len);
     m_varInfo.activate |= FB_ACTIVATE_NOW | FB_ACTIVATE_FORCE;
 	m_varInfo.yres_virtual = m_varInfo.yres * 2;
@@ -224,7 +254,10 @@ void FrameBuffer::refresh()
 
 bool FrameBuffer::close()
 {
+    memset(&m_fixInfo, 0, sizeof(fb_fix_screeninfo));
+    memset(&m_varInfo, 0, sizeof(fb_fix_screeninfo));
     if (m_mem != nullptr) {
+        munmap(m_mem, m_fixInfo.smem_len);
         delete []m_mem;
         m_mem = nullptr;
     }
@@ -242,6 +275,9 @@ bool FrameBuffer::close()
 
 void FrameBuffer::draw(const Drawable* d)
 {
+    if (m_fbd == 0) {
+        return;
+    }
     pos_t x = d->x();
     pos_t y = d->y();
     uint32_t Bpp = bytesPerPixel();
@@ -269,18 +305,27 @@ void FrameBuffer::draw(const Drawable* d)
 
 void FrameBuffer::fillRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t color)
 {
+    if (m_fbd == 0) {
+        return;
+    }
     Color c = convert(color);
     fillRect(x, y, width, height, c);  
 }
 
 void FrameBuffer::drawRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t color)
 {
+    if (m_fbd == 0) {
+        return;
+    }
     Color c = convert(color);
     drawRect(x, y, width, height, c);  
 }
 
 void FrameBuffer::fillRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, const Color& c)
 {
+    if (m_fbd == 0) {
+        return;
+    }
     uint32_t Bpp = bytesPerPixel();
     for(uint32_t i = 0; i < width; ++i) {
         for(uint32_t j = 0; j < height; ++j) {
@@ -294,6 +339,9 @@ void FrameBuffer::fillRect(uint32_t x, uint32_t y, uint32_t width, uint32_t heig
 
 void FrameBuffer::drawRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, const Color& c)
 {
+    if (m_fbd == 0) {
+        return;
+    }
     uint32_t Bpp = bytesPerPixel();
     for(uint32_t i = 0; i < width; ++i)
     {
