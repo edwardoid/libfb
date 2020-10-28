@@ -20,6 +20,7 @@
 #pragma once
 
 #include "globals.h"
+#include <string>
 
 BEGIN_LIBFB_NS
 
@@ -32,6 +33,7 @@ public:
     virtual dimension_t width() const = 0;
     virtual dimension_t height() const = 0;
     virtual color_t get(pos_t x, pos_t y) const = 0;
+    void dumpToImage(std::string filename) const;
 protected:
     pos_t m_x = 0;
     pos_t m_y = 0;

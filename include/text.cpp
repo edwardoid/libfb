@@ -21,6 +21,7 @@
 #include "helpers.h"
 #include <cmath>
 #include <limits>
+#include "log.h"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -30,6 +31,55 @@
 #define DEBUG std::cout << "\n" << __FILE__ << ":" << __LINE__ << " "
 
 BEGIN_LIBFB_NS
+
+struct Rect
+{
+    int32_t left = std::numeric_limits<int32_t>::max();
+    int32_t top = std::numeric_limits<int32_t>::max();
+    int32_t right = std::numeric_limits<int32_t>::min();
+    int32_t bottom = std::numeric_limits<int32_t>::min();
+    inline void includePoint(int32_t x, int32_t y)
+    {
+        left = std::min(x, left);
+        right = std::max(right, x);
+        top = std::min(top, y);
+        bottom = std::max(bottom, y);
+    }
+
+    inline void includeRect(int32_t x, int32_t y, int32_t w, int32_t h)
+    {
+        includePoint(x, y);
+        // includePoint(x + w, y);
+        // includePoint(x, y + h);
+        includePoint(x + w, y + h);
+    }
+
+    inline int32_t w() const { return right - left; }
+    inline int32_t h() const { return bottom - top; }
+
+    inline void moveTo(int32_t x, int32_t y)
+    {
+        int32_t w = Rect::w();
+        int32_t h = Rect::h();
+        left = x;
+        top = y;
+        right = x + w;
+        bottom = y + h;
+    }
+
+    inline bool isValid() const
+    {
+        return left < right &&
+               bottom < top;
+    }
+
+    inline std::string toString()
+    {
+        std::stringstream ss;
+        ss << "[(" << left << ", " << top << ") (" << right << ", " << bottom << ")] w = " << w() << " h = " << h();
+        return ss.str();
+    }
+};
 
 Text::Text()
     : m_buffer(nullptr)
@@ -122,6 +172,14 @@ void Text::setAngle(double angle)
     }
 }
 
+void Text::mapTo(pos_t x, pos_t y)
+{
+    Drawable::mapTo(x, y);
+    if (m_x != x || m_y != y)
+    {
+        update();
+    }
+}
 
 void Text::setDPI(dimension_t dpi)
 {
@@ -207,10 +265,7 @@ void Text::update()
 
     FT_UInt previous = 0;
 
-    int16_t left = std::numeric_limits<int16_t>::max();
-    int16_t right = std::numeric_limits<int16_t>::min();
-    int16_t top = std::numeric_limits<int16_t>::max();
-    int16_t bottom = std::numeric_limits<int16_t>::min();
+    Rect bound;
 
     for (size_t n = 0; n < m_text.size(); n++)
     {
@@ -239,22 +294,27 @@ void Text::update()
 
         /* Convert to an anti-aliased bitmap */
         FT_Render_Glyph(face->glyph, ft_render_mode_mono);
-        
-        left = std::min<int16_t>(left, slot->bitmap_left);
-        top = std::min<int16_t>(top, m_fontSize - slot->bitmap_top);
-        right = std::max<int16_t>(right, slot->bitmap_left + slot->bitmap.width);
-        bottom = std::max<int16_t>(bottom, slot->bitmap_top + slot->bitmap.rows);
+
+        int32_t overOrigin = pen.y + face->glyph->metrics.horiBearingY;
+        int32_t underOrigin = pen.y - (face->glyph->metrics.height - face->glyph->metrics.horiBearingY);
+
+        if (slot->bitmap.width != 0 && slot->bitmap.rows != 0) {
+            bound.includeRect(pen.x + face->glyph->metrics.horiBearingX , -overOrigin,
+                              face->glyph->metrics.horiAdvance, face->glyph->metrics.height);
+        }
 
         /* increment pen position */
         pen.x += slot->advance.x;
         pen.y += slot->advance.y;
     }
 
-    int16_t w = right - left + 10;
-    int16_t h = bottom - top + 10;
 
-    pen.x = 0;
-    pen.y = 0;
+    int32_t shiftX = bound.left;
+    int32_t underOrigin = bound.bottom;
+    int32_t overOrigin = bound.h() - underOrigin;
+
+    int16_t w = bound.w() >> 6;
+    int16_t h = bound.h() >> 6;
 
     resizeBuffer(w, h);
 
@@ -300,13 +360,19 @@ void Text::update()
         }
 
         /* now, draw to our target surface (convert position) */
+        Rect glyphBound;
+        glyphBound.includeRect(drawPen.x + (face->glyph->metrics.horiBearingX >> 6),
+                               (overOrigin - face->glyph->metrics.horiBearingY) >> 6,
+                               slot->bitmap.width, slot->bitmap.rows);
+
+        //glyphBound.moveTo(drawPen.x >> 6, drawPen.y >> 6);
+
         putBitmap(  m_buffer, &slot->bitmap,
-                    ( left < 0 ? -left : 0 ) + slot->bitmap_left,
-                    ( top < 0 ? -top : 0 ) + m_fontSize - slot->bitmap_top );
+                    glyphBound.left, glyphBound.top);
 
         /* increment pen position */
-        drawPen.x += slot->advance.x;
-        drawPen.y += slot->advance.y;
+        drawPen.x += slot->advance.x >> 6;
+        drawPen.y += slot->advance.y >> 6;
 
         /* record current glyph index */
         previous = glyph_index;

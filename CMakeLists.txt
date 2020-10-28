@@ -12,6 +12,8 @@ find_package(PkgConfig)
 file(GLOB SOURCES "${CMAKE_CURRENT_LIST_DIR}/include/*.cpp")
 file(GLOB INCLUDES "${CMAKE_CURRENT_LIST_DIR}/include/*.h")
 
+include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
+
 find_package(Threads)
 
 find_package(Freetype REQUIRED)
@@ -31,11 +33,14 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE 1)
 set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION 1)
 set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER include/wifi_setup.h)
 
+
+
 if (BUILD_TEST)
    file(GLOB TEST_SOURCES "tests/*.cpp")
    add_executable(${PROJECT_NAME}_test ${SOURCES} ${TEST_SOURCES})
    include_directories(${PROJECT_NAME}_test "include")
 
+   target_link_libraries (${PROJECT_NAME}_test qrencode)  
    target_link_libraries (${PROJECT_NAME}_test ${PROJECT_NAME})
    target_link_libraries(${PROJECT_NAME}_test ${FREETYPE_LIBRARIES})
    target_link_libraries(${PROJECT_NAME}_test ${PNG_LIBRARIES})

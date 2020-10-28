@@ -21,6 +21,7 @@
 #define LOG_H
 
 #include <iostream>
+#include <sstream>
 #define F_NAME __PRETTY_FUNCTION__
 //#define LOG_FMT " In:\n" << __FILE__ << ":" << __LINE__ << " " << F_NAME << ":\n\t"
 #define LOG_FMT " " << F_NAME << ":"

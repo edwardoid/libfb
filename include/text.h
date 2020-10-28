@@ -32,6 +32,7 @@ public:
     virtual dimension_t width() const override;
     virtual dimension_t height() const override;
     virtual color_t get(pos_t x, pos_t y) const override;
+    virtual void mapTo(pos_t x, pos_t y) override;
     void setText(const std::string& text);
     void setFont(const std::string& font);
     void setSize(dimension_t size);
