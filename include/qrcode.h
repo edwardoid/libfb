@@ -20,7 +20,6 @@
 #pragma once
 
 #include <drawable.h>
-#include <helpers.h>
 #include <qrencode.h>
 #include <string>
 
@@ -39,7 +38,7 @@ public:
     virtual dimension_t width() const;
     virtual dimension_t height() const;
     virtual color_t get(pos_t x, pos_t y) const;
-    void setColors(color_t foreground, color_t background = helpers::c(0xFF, 0xFF, 0xFF, 0));
+    void setColors(color_t foreground, color_t background = 0xFFFFFF00);
 private:
     void update();
 private:

@@ -22,7 +22,7 @@
 #include <string>
 #include <unordered_map>
 #include <memory>
-#include "pngimage.h"
+#include <pngimage.h>
 
 BEGIN_LIBFB_NS
 class PNGProvider

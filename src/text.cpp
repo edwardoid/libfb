@@ -19,78 +19,23 @@
 
 #include "text.h"
 #include "helpers.h"
-#include <cmath>
-#include <limits>
 #include "log.h"
+#include "utils.h"
 
 #include <ft2build.h>
-#include FT_FREETYPE_H
+#include <freetype/freetype.h>
 
 #include <iostream>
 
-#define DEBUG std::cout << "\n" << __FILE__ << ":" << __LINE__ << " "
-
 BEGIN_LIBFB_NS
 
-struct Rect
-{
-    int32_t left = std::numeric_limits<int32_t>::max();
-    int32_t top = std::numeric_limits<int32_t>::max();
-    int32_t right = std::numeric_limits<int32_t>::min();
-    int32_t bottom = std::numeric_limits<int32_t>::min();
-    inline void includePoint(int32_t x, int32_t y)
-    {
-        left = std::min(x, left);
-        right = std::max(right, x);
-        top = std::min(top, y);
-        bottom = std::max(bottom, y);
-    }
-
-    inline void includeRect(int32_t x, int32_t y, int32_t w, int32_t h)
-    {
-        includePoint(x, y);
-        // includePoint(x + w, y);
-        // includePoint(x, y + h);
-        includePoint(x + w, y + h);
-    }
-
-    inline int32_t w() const { return right - left; }
-    inline int32_t h() const { return bottom - top; }
-
-    inline void moveTo(int32_t x, int32_t y)
-    {
-        int32_t w = Rect::w();
-        int32_t h = Rect::h();
-        left = x;
-        top = y;
-        right = x + w;
-        bottom = y + h;
-    }
-
-    inline bool isValid() const
-    {
-        return left < right &&
-               bottom < top;
-    }
-
-    inline std::string toString()
-    {
-        std::stringstream ss;
-        ss << "[(" << left << ", " << top << ") (" << right << ", " << bottom << ")] w = " << w() << " h = " << h();
-        return ss.str();
-    }
-};
 
 Text::Text()
     : m_buffer(nullptr)
-{
-
-}
+{}
 
 Text::~Text()
-{
-    
-}
+{}
 
 void Text::destroyBuffer()
 {
@@ -168,15 +113,6 @@ void Text::setAngle(double angle)
     if (m_angle != angle)
     {
         m_angle = angle;
-        update();
-    }
-}
-
-void Text::mapTo(pos_t x, pos_t y)
-{
-    Drawable::mapTo(x, y);
-    if (m_x != x || m_y != y)
-    {
         update();
     }
 }
@@ -295,9 +231,28 @@ void Text::update()
         /* Convert to an anti-aliased bitmap */
         FT_Render_Glyph(face->glyph, ft_render_mode_mono);
 
+        // LOG_DEBUG << "-------------- " << m_text[n] << " --------------";
+        // LOG_DEBUG << "pen.x " << pen.x;
+        // LOG_DEBUG << "pen.y " << pen.y;
+        // LOG_DEBUG << "slot->bitmap_top " << slot->bitmap_top;
+        // LOG_DEBUG << "slot->bitmap_left " << slot->bitmap_left;
+        // LOG_DEBUG << "slot->bitmap.width " << slot->bitmap.width;
+        // LOG_DEBUG << "slot->bitmap.rows " << slot->bitmap.rows;
+        // LOG_DEBUG << "face->glyph->metrics.height " << (face->glyph->metrics.height >> 6);
+        // LOG_DEBUG << "face->glyph->metrics.width " << (face->glyph->metrics.width >> 6);
+        // LOG_DEBUG << "face->glyph->metrics.horiBearingX " << (face->glyph->metrics.horiBearingX >> 6);
+        // LOG_DEBUG << "face->glyph->metrics.horiBearingY " << (face->glyph->metrics.horiBearingY >> 6);
+        // LOG_DEBUG << "face->glyph->metrics.horiAdvance " << (face->glyph->metrics.horiAdvance >> 6);
+        // LOG_DEBUG << "-------------------------------";
+
         int32_t overOrigin = pen.y + face->glyph->metrics.horiBearingY;
         int32_t underOrigin = pen.y - (face->glyph->metrics.height - face->glyph->metrics.horiBearingY);
 
+        // LOG_DEBUG << pen.x << " " << slot->bitmap_top << " "
+        //           << slot->bitmap.width << " " << slot->bitmap.rows;
+        
+        FT_BBox bb;
+        
         if (slot->bitmap.width != 0 && slot->bitmap.rows != 0) {
             bound.includeRect(pen.x + face->glyph->metrics.horiBearingX , -overOrigin,
                               face->glyph->metrics.horiAdvance, face->glyph->metrics.height);
@@ -313,8 +268,12 @@ void Text::update()
     int32_t underOrigin = bound.bottom;
     int32_t overOrigin = bound.h() - underOrigin;
 
+    //LOG_DEBUG << "Bounding rect " << bound.toString() << " underOrigin " << underOrigin << " overOrigin " << overOrigin;
+
     int16_t w = bound.w() >> 6;
     int16_t h = bound.h() >> 6;
+
+    //LOG_DEBUG << "Bounding rect(normal) " << bound.toString();
 
     resizeBuffer(w, h);
 
@@ -367,6 +326,7 @@ void Text::update()
 
         //glyphBound.moveTo(drawPen.x >> 6, drawPen.y >> 6);
 
+        //LOG_DEBUG << "Rendering '" << m_text[n] << "' in " << glyphBound.toString() << std::endl;
         putBitmap(  m_buffer, &slot->bitmap,
                     glyphBound.left, glyphBound.top);
 

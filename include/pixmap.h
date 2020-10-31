@@ -17,8 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ************************************************************************/
 
-#ifndef PIXMAP_H
-#define PIXMAP_H
+#pragma once
 
 #include <stdint.h>
 
@@ -32,5 +31,3 @@ namespace IoT
         virtual uint32_t rgba(uint32_t x, uint32_t y) const = 0;
     };
 }
-
-#endif // PIXMAP_H

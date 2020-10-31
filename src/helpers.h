@@ -19,25 +19,22 @@
 
 #pragma once
 
-
-#include <cstdint>
-#include <stdint.h>
-
-#ifndef LIBFB_NS
-    #define LIBFB_NS libfb
-#endif // LIBFB_NS
-
-#define BEGIN_LIBFB_NS namespace LIBFB_NS {
-#define END_LIBFB_NS }
-
+#include <libfb_globals.h>
+#include <math.h>
+#include <vector>
 BEGIN_LIBFB_NS
 
-using color_t = std::uint32_t;
+namespace helpers
+{
+    
+inline double distance(delta_t x1, delta_t y1, delta_t x2, delta_t y2)
+{
+    double dx = pow( delta_t(x1) - delta_t(x2), 2);
+    double dy = pow( delta_t(y1) - delta_t(y2), 2);
+    return sqrt(dx + dy);
+}
 
-#define INVALID_COLOR ((color_t) -1)
-
-using pos_t = std::int16_t;
-using delta_t = std::int32_t;
-using dimension_t = std::int16_t;
+    static color_t avg(const std::vector<color_t>& colors);
+};
 
 END_LIBFB_NS

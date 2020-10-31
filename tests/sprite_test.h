@@ -8,7 +8,7 @@
 #include "pngprovider.h"
 #include "pngimage.h"
 #include "sprite.h"
-#include "log.h"
+#include "../src/log.h"
 
 using namespace LIBFB_NS;
 

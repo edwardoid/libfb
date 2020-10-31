@@ -16,10 +16,10 @@ void text_test()
         text.setSize(24);
         text.mapTo(100, 100);
         text.setText("23·30");
-        text.setAngle(0);
+        text.setAngle(double(90) * 0.01745329252);
         text.setColor(0xFF0000FF);
         std::cout << "\nDone " <<text.width() << "x" << text.height() << std::endl;
-        Rotate rot(&text, i);
-        rot.dumpToImage(std::to_string(i) + ".png");
+        break;
+        text.dumpToImage(std::to_string(i) + ".png");
     }
 }

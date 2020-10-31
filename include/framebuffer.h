@@ -21,8 +21,8 @@
 #include <string>
 #include <stdint.h>
 #include <linux/fb.h>
-#include "drawable.h"
-#include "canvas.h"
+#include <drawable.h>
+#include <canvas.h>
 
 BEGIN_LIBFB_NS
 class FrameBuffer
