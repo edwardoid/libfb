@@ -81,6 +81,11 @@ void Text::setText(const std::string& text)
     }
 }
 
+const std::string& Text::text() const
+{
+    return m_text;
+}
+
 void Text::setFont(const std::string& font)
 {
     if (m_font != font)
