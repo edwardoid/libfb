@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 find_package(PkgConfig)
 find_package(Freetype REQUIRED)
-
+find_package(libqrencode REQUIRED)
 find_package(PNG REQUIRED)
 
 file(GLOB SOURCES "${CMAKE_CURRENT_LIST_DIR}/src/*.cpp")
@@ -20,7 +20,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION 1)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE 1)
 set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION 1)
-set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER HEADERS)
+#set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER include)
 
 INSTALL(TARGETS ${PROJECT_NAME} 
         LIBRARY DESTINATION lib
@@ -31,8 +31,10 @@ INSTALL(TARGETS ${PROJECT_NAME}
 
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
-include_directories(${FREETYPE_INCLUDE_DIRS})
-include_directories(${PNG_INCLUDE_DIRS})
+
+target_link_libraries(${PROJECT_NAME} Freetype::Freetype)
+target_link_libraries(${PROJECT_NAME} PNG::PNG)
+target_link_libraries(${PROJECT_NAME} libqrencode::libqrencode)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE 1)
